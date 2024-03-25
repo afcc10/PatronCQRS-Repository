@@ -17,6 +17,7 @@ namespace DependencyInjection
             
             services.AddScoped<ITipoPermisoRepository, TipoPermisoRepository>();
             services.AddScoped<IEmpleadoRepository, EmpleadoRepository>();
+            services.AddScoped<IPermisoRepository, PermisoRepository>();
             return services;
         }
 
@@ -25,6 +26,7 @@ namespace DependencyInjection
            
             services.AddScoped<ITipoPermisoServices, TipoPermisoServices>();
             services.AddScoped<IEmpleadoService, EmpleadoService>();
+            services.AddScoped<IPermisoService, PermisoService>();
             //  services.AddAutoMapper(typeof(TipoPermisoProfileMap));
 
             return services;

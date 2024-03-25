@@ -8,48 +8,46 @@ using Models.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 
 namespace DataAccess.Core.Implements
 {
-    public class EmpleadoRepository : IEmpleadoRepository
+    public class PermisoRepository : IPermisoRepository
     {
         #region Propierties
         private readonly DbCrudContext context;
 
-        public EmpleadoRepository(DbCrudContext context)
+        public PermisoRepository(DbCrudContext context)
         {
             this.context = context;
         }
         #endregion
-
-        public async Task<Response<EmpleadoDto>> create(EmpleadoDto dto)
+        public async Task<Response<PermisoDto>> create(PermisoDto dto)
         {
-            Response<EmpleadoDto> response = new();
+            Response<PermisoDto> response = new();
             try
             {
-                Empleados empleado = new();
+                Permisos permisos = new();
 
-                empleado.Apellido = dto.Apellido;
-                empleado.Telefono = dto.Telefono;
-                empleado.Email = dto.Email;
-                empleado.Nombre = dto.Nombre;
-                empleado.Departamento = dto.Departamento;
-
-                context.Add(empleado);
+                permisos.Motivo = dto.Motivo;
+                permisos.Estado = dto.Estado;
+                permisos.IdEmpleado = dto.IdEmpleado;
+                permisos.FechaSolicitud = dto.FechaSolicitud;
+                
+                context.Add(permisos);
                 context.SaveChanges();
 
                 response = new()
                 {
                     Status = true,
-                    ObjectResponse = new EmpleadoDto() 
-                    { 
-                        Apellido = empleado.Apellido, 
-                        Departamento = empleado.Departamento, 
-                        Email = empleado.Email, 
-                        Nombre = empleado.Nombre, 
-                        Telefono = empleado.Telefono, 
-                        Id = empleado.Id 
+                    ObjectResponse = new PermisoDto()
+                    {
+                        Motivo = permisos.Motivo,
+                        Estado = permisos.Estado,
+                        IdEmpleado = permisos.IdEmpleado,
+                        FechaSolicitud = permisos.FechaSolicitud,
+                        Id = permisos.Id
                     },
                     Message = MessageExtension.AddMessageList(Message_es.CreateSucces)
                 };
@@ -58,7 +56,7 @@ namespace DataAccess.Core.Implements
             }
             catch (Exception)
             {
-                return new Response<EmpleadoDto>
+                return new Response<PermisoDto>
                 {
                     Status = false,
                     ObjectResponse = null,
@@ -72,9 +70,9 @@ namespace DataAccess.Core.Implements
             Response<bool> response = new();
             try
             {
-                var empleado = context.Empleados.Where(x => x.Id == id).FirstOrDefault();
+                var permiso = context.Permisos.Where(x => x.Id == id).FirstOrDefault();
 
-                context.Remove(empleado);
+                context.Remove(permiso);
                 context.SaveChanges();
 
                 response = new()
@@ -97,16 +95,16 @@ namespace DataAccess.Core.Implements
             }
         }
 
-        public async Task<Response<IEnumerable<EmpleadoDto>>> GetAll()
+        public async Task<Response<IEnumerable<PermisoDto>>> GetAll()
         {
-            Response<IEnumerable<EmpleadoDto>> response = new();
+            Response<IEnumerable<PermisoDto>> response = new();
             try
             {
-                var empleados = await context.Empleados.ToListAsync();
+                var permiso = await context.Permisos.ToListAsync();
 
-                if (empleados == null)
+                if (permiso == null)
                 {
-                    return new Response<IEnumerable<EmpleadoDto>>
+                    return new Response<IEnumerable<PermisoDto>>
                     {
                         Status = false,
                         ObjectResponse = null,
@@ -114,13 +112,12 @@ namespace DataAccess.Core.Implements
                     };
                 }
 
-                var select = empleados.Select(x => new EmpleadoDto
+                var select = permiso.Select(x => new PermisoDto
                 {
-                    Apellido = x.Apellido,
-                    Departamento = x.Departamento,
-                    Email = x.Email,
-                    Nombre = x.Nombre,
-                    Telefono = x.Telefono,
+                    FechaSolicitud = x.FechaSolicitud,
+                    IdEmpleado = x.IdEmpleado,
+                    Estado = x.Estado,
+                    Motivo = x.Motivo,
                     Id = x.Id
                 });
 
@@ -135,25 +132,25 @@ namespace DataAccess.Core.Implements
             }
             catch (Exception)
             {
-                return new Response<IEnumerable<EmpleadoDto>>
+                return new Response<IEnumerable<PermisoDto>>
                 {
                     Status = false,
                     ObjectResponse = null,
                     Message = MessageExtension.AddMessageList(Message_es.ConsultaNotFound)
                 };
-            }           
+            }
         }
 
-        public async Task<Response<EmpleadoDto>> GetById(int id)
+        public async Task<Response<PermisoDto>> GetById(int id)
         {
-            Response<EmpleadoDto> response = new();
+            Response<PermisoDto> response = new();
             try
             {
-                var empleado = await context.Empleados.Where(x => x.Id == id).FirstOrDefaultAsync();
+                var permiso = await context.Permisos.Where(x => x.Id == id).FirstOrDefaultAsync();
 
-                if (empleado == null)
+                if (permiso == null)
                 {
-                    return new Response<EmpleadoDto>
+                    return new Response<PermisoDto>
                     {
                         Status = false,
                         ObjectResponse = null,
@@ -164,14 +161,13 @@ namespace DataAccess.Core.Implements
                 response = new()
                 {
                     Status = true,
-                    ObjectResponse = new EmpleadoDto 
+                    ObjectResponse = new PermisoDto
                     {
-                        Apellido = empleado.Apellido,
-                        Departamento = empleado.Departamento,
-                        Email = empleado.Email,
-                        Nombre = empleado.Nombre,
-                        Telefono = empleado.Telefono,
-                        Id = empleado.Id
+                        Motivo = permiso.Motivo,
+                        Estado = permiso.Estado,
+                        IdEmpleado = permiso.IdEmpleado,
+                        FechaSolicitud = permiso.FechaSolicitud,
+                        Id = permiso.Id
                     },
                     Message = MessageExtension.AddMessageList(Message_es.ConsultaExitosa)
                 };
@@ -180,7 +176,7 @@ namespace DataAccess.Core.Implements
             }
             catch (Exception)
             {
-                return new Response<TipoPermisoDto>
+                return new Response<PermisoDto>
                 {
                     Status = false,
                     ObjectResponse = null,
@@ -189,33 +185,31 @@ namespace DataAccess.Core.Implements
             }
         }
 
-        public async Task<Response<EmpleadoDto>> update(EmpleadoDto dto)
+        public async Task<Response<PermisoDto>> update(PermisoDto dto)
         {
-            Response<EmpleadoDto> response = new();
+            Response<PermisoDto> response = new();
             try
             {
-                var empleado = context.Empleados.Where(x => x.Id == dto.Id).FirstOrDefault();
+                var permiso = context.Permisos.Where(x => x.Id == dto.Id).FirstOrDefault();
 
-                empleado.Apellido = dto.Apellido;
-                empleado.Telefono = dto.Telefono;
-                empleado.Email = dto.Email;
-                empleado.Nombre = dto.Nombre;
-                empleado.Departamento = dto.Departamento;
+                permiso.Motivo = dto.Motivo;
+                permiso.Estado = dto.Estado;
+                permiso.IdEmpleado = dto.IdEmpleado;
+                permiso.FechaSolicitud = dto.FechaSolicitud;               
 
-                context.Update(empleado);
+                context.Update(permiso);
                 context.SaveChanges();
 
                 response = new()
                 {
                     Status = true,
-                    ObjectResponse = new EmpleadoDto 
+                    ObjectResponse = new PermisoDto
                     {
-                        Apellido = empleado.Apellido,
-                        Departamento = empleado.Departamento,
-                        Email = empleado.Email,
-                        Nombre = empleado.Nombre,
-                        Telefono = empleado.Telefono,
-                        Id = empleado.Id
+                        Id = dto.Id,
+                        Motivo = dto.Motivo,
+                        Estado = dto.Estado,
+                        IdEmpleado = dto.IdEmpleado,
+                        FechaSolicitud = dto.FechaSolicitud
                     },
                     Message = MessageExtension.AddMessageList(Message_es.UpdateSucces)
                 };
@@ -224,7 +218,7 @@ namespace DataAccess.Core.Implements
             }
             catch (Exception)
             {
-                return new Response<EmpleadoDto>
+                return new Response<PermisoDto>
                 {
                     Status = false,
                     ObjectResponse = null,
